@@ -50,9 +50,11 @@ const copyDir = async (originFolderPath, destinationFolderPath) => {
 
       if (item.isDirectory()) {
         await copyDir(itemPath, destinationItemPath);
-      }
-      if (item.isFile()) {
-        await fsPromise.copyFile(itemPath, destinationItemPath);
+      } else {
+        const readStream = fs.createReadStream(itemPath);
+        const writeStream = fs.createWriteStream(destinationItemPath);
+
+        readStream.pipe(writeStream);
       }
     }
   } catch (err) {
