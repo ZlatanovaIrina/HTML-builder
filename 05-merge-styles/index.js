@@ -1,3 +1,4 @@
+const fs = require('fs');
 const fsPromise = require('node:fs/promises');
 const path = require('path');
 
@@ -21,17 +22,15 @@ const makeBundle = async (stylesFolderPath) => {
       throw new Error('Css files not found');
     }
 
-    const bundleContent = [];
+    const bundlePath = path.join(__dirname, 'project-dist', 'bundle.css');
+    const writeStream = fs.createWriteStream(bundlePath);
 
     for (let file of cssFilesFromStylesFolder) {
       const filePath = path.join(file.parentPath, file.name);
-      const fileContent = await fsPromise.readFile(filePath);
-      bundleContent.push(fileContent);
+      const readStream = fs.createReadStream(filePath, { encoding: 'utf-8' });
+
+      readStream.on('data', (chunk) => writeStream.write(`${chunk}\n`));
     }
-
-    const bundlePath = path.join(__dirname, 'project-dist', 'bundle.css');
-
-    await fsPromise.writeFile(bundlePath, bundleContent.join(''));
   } catch (err) {
     console.log('An error occurred while copying:', err.message);
   }
