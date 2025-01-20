@@ -50,7 +50,6 @@ const copyDir = async (originFolderPath, destinationFolderPath) => {
 
       if (item.isDirectory()) {
         await copyDir(itemPath, destinationItemPath);
-        return;
       }
       if (item.isFile()) {
         await fsPromise.copyFile(itemPath, destinationItemPath);
